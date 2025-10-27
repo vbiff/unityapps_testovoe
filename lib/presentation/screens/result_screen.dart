@@ -44,17 +44,17 @@ class ResultScreen extends StatelessWidget {
                   if (state is GeneratingImageState ||
                       state is ImageGeneratedState ||
                       state is ImageGenerationErrorState)
-                    _buildPromptDisplay(context, _getPromptFromState(state)),
+                    PromptDisplayWidget(prompt: _getPromptFromState(state)),
 
                   const SizedBox(height: 24),
 
                   // Main content area
-                  Expanded(child: _buildMainContent(context, state)),
+                  Expanded(child: MainContentWidget(state: state)),
 
                   const SizedBox(height: 24),
 
                   // Action buttons
-                  _buildActionButtons(context, state),
+                  ActionButtonsWidget(state: state),
                 ],
               ),
             ),
@@ -64,7 +64,22 @@ class ResultScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPromptDisplay(BuildContext context, String prompt) {
+  String _getPromptFromState(ImageGenerationState state) {
+    if (state is GeneratingImageState) return state.prompt;
+    if (state is ImageGeneratedState) return state.prompt;
+    if (state is ImageGenerationErrorState) return state.prompt;
+    return '';
+  }
+}
+
+/// Widget for displaying the user's prompt
+class PromptDisplayWidget extends StatelessWidget {
+  final String prompt;
+
+  const PromptDisplayWidget({super.key, required this.prompt});
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Container(
@@ -73,7 +88,7 @@ class ResultScreen extends StatelessWidget {
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.2),
+          color: theme.colorScheme.outline.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -108,21 +123,39 @@ class ResultScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildMainContent(BuildContext context, ImageGenerationState state) {
+/// Widget for displaying the main content based on state
+class MainContentWidget extends StatelessWidget {
+  final ImageGenerationState state;
+
+  const MainContentWidget({super.key, required this.state});
+
+  @override
+  Widget build(BuildContext context) {
     if (state is GeneratingImageState) {
-      return _buildLoadingContent(context);
+      return const LoadingContentWidget();
     } else if (state is ImageGeneratedState) {
-      return _buildImageContent(state.imageUrl);
+      return ImageContentWidget(
+        imageUrl: (state as ImageGeneratedState).imageUrl,
+      );
     } else if (state is ImageGenerationErrorState) {
-      return _buildErrorContent(context, state.errorMessage);
+      return ErrorContentWidget(
+        errorMessage: (state as ImageGenerationErrorState).errorMessage,
+      );
     } else {
       // Fallback - shouldn't happen in normal flow
-      return _buildLoadingContent(context);
+      return const LoadingContentWidget();
     }
   }
+}
 
-  Widget _buildLoadingContent(BuildContext context) {
+/// Widget for displaying loading state
+class LoadingContentWidget extends StatelessWidget {
+  const LoadingContentWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Container(
@@ -130,7 +163,7 @@ class ResultScreen extends StatelessWidget {
         color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.2),
+          color: theme.colorScheme.outline.withValues(alpha: 0.2),
           width: 1,
         ),
       ),
@@ -149,13 +182,9 @@ class ResultScreen extends StatelessWidget {
                   shape: BoxShape.circle,
                   gradient: SweepGradient(
                     colors: [
-                      Theme.of(
-                        context,
-                      ).colorScheme.primary.withValues(alpha: 0.1),
-                      Theme.of(context).colorScheme.primary,
-                      Theme.of(
-                        context,
-                      ).colorScheme.primary.withValues(alpha: 0.1),
+                      theme.colorScheme.primary.withValues(alpha: 0.1),
+                      theme.colorScheme.primary,
+                      theme.colorScheme.primary.withValues(alpha: 0.1),
                     ],
                     stops: [0.0, value, 1.0],
                   ),
@@ -175,9 +204,9 @@ class ResultScreen extends StatelessWidget {
 
           Text(
             'Generating your image...',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: theme.colorScheme.onSurface,
             ),
           ),
 
@@ -185,8 +214,8 @@ class ResultScreen extends StatelessWidget {
 
           Text(
             'This may take a few moments',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
 
@@ -197,7 +226,7 @@ class ResultScreen extends StatelessWidget {
             width: 200,
             height: 4,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+              color: theme.colorScheme.outline.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(2),
             ),
             child: TweenAnimationBuilder<double>(
@@ -207,7 +236,7 @@ class ResultScreen extends StatelessWidget {
                 return Container(
                   width: 200 * value,
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.primary,
+                    color: theme.colorScheme.primary,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 );
@@ -218,33 +247,48 @@ class ResultScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildImageContent(String imageUrl) {
-    return Builder(
-      builder: (context) {
-        final theme = Theme.of(context);
-        return Container(
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: theme.colorScheme.outline.withOpacity(0.2),
-              width: 1,
-            ),
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(16),
-            child: AnimatedSwitcher(
-              duration: const Duration(milliseconds: 500),
-              child: _buildImageWidget(imageUrl),
-            ),
-          ),
-        );
-      },
+/// Widget for displaying generated image
+class ImageContentWidget extends StatelessWidget {
+  final String imageUrl;
+
+  const ImageContentWidget({super.key, required this.imageUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: theme.colorScheme.outline.withValues(alpha: 0.2),
+          width: 1,
+        ),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 500),
+          child: ImageWidget(imageUrl: imageUrl),
+        ),
+      ),
     );
   }
+}
 
-  Widget _buildImageWidget(String imageUrl) {
+/// Widget for handling image display (base64 or network)
+class ImageWidget extends StatelessWidget {
+  final String imageUrl;
+
+  const ImageWidget({super.key, required this.imageUrl});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     // Check if it's a base64 data URL
     if (imageUrl.startsWith('data:image/')) {
       try {
@@ -259,11 +303,11 @@ class ResultScreen extends StatelessWidget {
           width: double.infinity,
           height: double.infinity,
           errorBuilder: (context, error, stackTrace) {
-            return _buildImageError();
+            return const ImageErrorWidget();
           },
         );
       } catch (e) {
-        return _buildImageError();
+        return const ImageErrorWidget();
       }
     } else {
       // Regular network URL
@@ -278,51 +322,62 @@ class ResultScreen extends StatelessWidget {
             return child;
           }
           return Container(
-            color: Theme.of(context).colorScheme.surface,
+            color: theme.colorScheme.surface,
             child: Center(
               child: CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.primary,
+                color: theme.colorScheme.primary,
               ),
             ),
           );
         },
         errorBuilder: (context, error, stackTrace) {
-          return _buildImageError();
+          return const ImageErrorWidget();
         },
       );
     }
   }
+}
 
-  Widget _buildImageError() {
-    return Builder(
-      builder: (context) {
-        final theme = Theme.of(context);
-        return Container(
-          color: theme.colorScheme.surface,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.broken_image_outlined,
-                size: 64,
-                color: theme.colorScheme.onSurface.withOpacity(0.5),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Failed to load image',
-                style: TextStyle(
-                  color: theme.colorScheme.onSurface.withOpacity(0.7),
-                  fontSize: 16,
-                ),
-              ),
-            ],
+/// Widget for displaying image loading errors
+class ImageErrorWidget extends StatelessWidget {
+  const ImageErrorWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      color: theme.colorScheme.surface,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.broken_image_outlined,
+            size: 64,
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
           ),
-        );
-      },
+          const SizedBox(height: 16),
+          Text(
+            'Failed to load image',
+            style: TextStyle(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+              fontSize: 16,
+            ),
+          ),
+        ],
+      ),
     );
   }
+}
 
-  Widget _buildErrorContent(BuildContext context, String errorMessage) {
+/// Widget for displaying error content
+class ErrorContentWidget extends StatelessWidget {
+  final String errorMessage;
+
+  const ErrorContentWidget({super.key, required this.errorMessage});
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Container(
@@ -341,13 +396,13 @@ class ResultScreen extends StatelessWidget {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.error.withOpacity(0.1),
+              color: theme.colorScheme.error.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.error_outline,
               size: 40,
-              color: Theme.of(context).colorScheme.error,
+              color: theme.colorScheme.error,
             ),
           ),
 
@@ -355,9 +410,9 @@ class ResultScreen extends StatelessWidget {
 
           Text(
             'Generation Failed',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: theme.colorScheme.onSurface,
             ),
           ),
 
@@ -367,8 +422,8 @@ class ResultScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
               errorMessage,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -377,8 +432,18 @@ class ResultScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildActionButtons(BuildContext context, ImageGenerationState state) {
+/// Widget for action buttons
+class ActionButtonsWidget extends StatelessWidget {
+  final ImageGenerationState state;
+
+  const ActionButtonsWidget({super.key, required this.state});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     if (state is GeneratingImageState) {
       return const SizedBox.shrink(); // No buttons during loading
     }
@@ -395,7 +460,7 @@ class ResultScreen extends StatelessWidget {
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
+              backgroundColor: theme.colorScheme.primary,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
@@ -427,7 +492,7 @@ class ResultScreen extends StatelessWidget {
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
+              backgroundColor: theme.colorScheme.primary,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
@@ -457,8 +522,8 @@ class ResultScreen extends StatelessWidget {
             context.go('/');
           },
           style: OutlinedButton.styleFrom(
-            foregroundColor: Theme.of(context).colorScheme.primary,
-            side: BorderSide(color: Theme.of(context).colorScheme.primary),
+            foregroundColor: theme.colorScheme.primary,
+            side: BorderSide(color: theme.colorScheme.primary),
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
@@ -478,12 +543,5 @@ class ResultScreen extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  String _getPromptFromState(ImageGenerationState state) {
-    if (state is GeneratingImageState) return state.prompt;
-    if (state is ImageGeneratedState) return state.prompt;
-    if (state is ImageGenerationErrorState) return state.prompt;
-    return '';
   }
 }
