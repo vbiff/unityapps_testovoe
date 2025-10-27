@@ -159,7 +159,7 @@ The `ImageGenerationService` integrates with API Ninjas Random Image API:
 - **Error States**: Clear error messages with retry options
 - **Input Validation**: Generate button disabled for empty prompts
 - **State Preservation**: Prompt text saved when navigating back
-- **Dark Mode Support**: Automatic system theme switching
+- **Light Theme**: Consistent Apple-inspired light theme throughout the app
 
 ## Dependencies
 

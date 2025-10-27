@@ -26,8 +26,7 @@ class MyApp extends StatelessWidget {
         title: 'AI Image Generator',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system,
+        themeMode: ThemeMode.light,
         routerConfig: AppRouter.router,
       ),
     );

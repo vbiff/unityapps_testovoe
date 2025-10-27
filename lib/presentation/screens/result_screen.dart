@@ -270,9 +270,14 @@ class ImageContentWidget extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 500),
-          child: ImageWidget(imageUrl: imageUrl),
+        child: Container(
+          padding: const EdgeInsets.all(8),
+          child: Center(
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              child: ImageWidget(imageUrl: imageUrl),
+            ),
+          ),
         ),
       ),
     );
@@ -299,9 +304,7 @@ class ImageWidget extends StatelessWidget {
         return Image.memory(
           imageBytes,
           key: ValueKey(imageUrl),
-          fit: BoxFit.cover,
-          width: double.infinity,
-          height: double.infinity,
+          fit: BoxFit.contain,
           errorBuilder: (context, error, stackTrace) {
             return const ImageErrorWidget();
           },
@@ -314,9 +317,7 @@ class ImageWidget extends StatelessWidget {
       return Image.network(
         imageUrl,
         key: ValueKey(imageUrl),
-        fit: BoxFit.cover,
-        width: double.infinity,
-        height: double.infinity,
+        fit: BoxFit.contain,
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) {
             return child;

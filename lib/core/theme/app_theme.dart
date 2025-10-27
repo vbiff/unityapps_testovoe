@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// Apple-inspired theme configuration
+/// Apple-inspired light theme configuration
 ///
 /// This theme is inspired by Apple's design language from apple.com
 /// featuring clean typography, subtle shadows, and premium color palette
+/// Provides only light theme for consistent user experience
 class AppTheme {
   // Apple-inspired color palette
   static const Color _primaryBlue = Color(0xFF007AFF);
@@ -313,55 +314,6 @@ class AppTheme {
       ),
     );
   }
-
-  /// Dark theme configuration (Apple-inspired dark mode)
-  static ThemeData get darkTheme {
-    const Color darkBackground = Color(0xFF000000);
-    const Color darkSurface = Color(0xFF1C1C1E);
-    const Color darkTextPrimary = Color(0xFFFFFFFF);
-    const Color darkTextSecondary = Color(0xFF8E8E93);
-    const Color darkDivider = Color(0xFF38383A);
-
-    return lightTheme.copyWith(
-      brightness: Brightness.dark,
-      scaffoldBackgroundColor: darkBackground,
-
-      colorScheme: const ColorScheme.dark(
-        primary: _primaryBlue,
-        onPrimary: Colors.white,
-        secondary: darkTextSecondary,
-        onSecondary: Colors.white,
-        surface: darkSurface,
-        onSurface: darkTextPrimary,
-        error: _errorRed,
-        onError: Colors.white,
-        outline: darkDivider,
-        outlineVariant: darkTextSecondary,
-      ),
-
-      appBarTheme: lightTheme.appBarTheme.copyWith(
-        backgroundColor: darkSurface,
-        foregroundColor: darkTextPrimary,
-        systemOverlayStyle: SystemUiOverlayStyle.light,
-        titleTextStyle: const TextStyle(
-          color: darkTextPrimary,
-          fontSize: 17,
-          fontWeight: _semibold,
-          letterSpacing: -0.41,
-        ),
-      ),
-
-      cardTheme: lightTheme.cardTheme.copyWith(color: darkSurface),
-
-      inputDecorationTheme: lightTheme.inputDecorationTheme.copyWith(
-        fillColor: darkSurface,
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: darkDivider, width: 1),
-        ),
-      ),
-    );
-  }
 }
 
 /// Custom colors for specific use cases
@@ -373,20 +325,16 @@ class AppColors {
   static const Color info = Color(0xFF5AC8FA);
 
   // Semantic colors
-  static const Color backgroundLight = Color(0xFFF5F5F7);
-  static const Color backgroundDark = Color(0xFF000000);
-  static const Color surfaceLight = Color(0xFFFFFFFF);
-  static const Color surfaceDark = Color(0xFF1C1C1E);
+  static const Color background = Color(0xFFF5F5F7);
+  static const Color surface = Color(0xFFFFFFFF);
 
   // Text colors
-  static const Color textPrimaryLight = Color(0xFF1D1D1F);
-  static const Color textPrimaryDark = Color(0xFFFFFFFF);
+  static const Color textPrimary = Color(0xFF1D1D1F);
   static const Color textSecondary = Color(0xFF86868B);
   static const Color textTertiary = Color(0xFFA1A1A6);
 
   // Border and divider
-  static const Color dividerLight = Color(0xFFD2D2D7);
-  static const Color dividerDark = Color(0xFF38383A);
+  static const Color divider = Color(0xFFD2D2D7);
 }
 
 /// Custom text styles for specific components
