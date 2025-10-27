@@ -397,20 +397,20 @@ class ErrorContentWidget extends StatelessWidget {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: theme.colorScheme.error.withValues(alpha: 0.1),
+              color: theme.colorScheme.primary.withValues(alpha: 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
-              Icons.error_outline,
+              Icons.refresh_rounded,
               size: 40,
-              color: theme.colorScheme.error,
+              color: theme.colorScheme.primary,
             ),
           ),
 
           const SizedBox(height: 24),
 
           Text(
-            'Generation Failed',
+            'Let\'s Try Again',
             style: theme.textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w600,
               color: theme.colorScheme.onSurface,
