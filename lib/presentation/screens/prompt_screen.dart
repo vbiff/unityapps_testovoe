@@ -5,7 +5,6 @@ import '../bloc/image_generation_bloc.dart';
 import '../bloc/image_generation_event.dart';
 import '../bloc/image_generation_state.dart';
 
-/// Screen for entering image generation prompts
 class PromptScreen extends StatefulWidget {
   const PromptScreen({super.key});
 
@@ -23,7 +22,6 @@ class _PromptScreenState extends State<PromptScreen> {
     _promptController = TextEditingController();
     _focusNode = FocusNode();
 
-    // Set initial text if there's a saved prompt
     final state = context.read<ImageGenerationBloc>().state;
     if (state is PromptInputState && state.savedPrompt != null) {
       _promptController.text = state.savedPrompt!;
@@ -47,65 +45,97 @@ class _PromptScreenState extends State<PromptScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'AI Image Generator',
-          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        backgroundColor: Colors.deepPurple,
-        elevation: 0,
-        centerTitle: true,
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const SizedBox(height: 40),
 
-              // Header section
-              const Icon(
-                Icons.auto_awesome,
-                size: 64,
-                color: Colors.deepPurple,
-              ),
-              const SizedBox(height: 24),
-
-              Text(
-                'Create Amazing Images',
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[800],
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-
-              Text(
-                'Describe what you want to see and let AI bring it to life',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
-                textAlign: TextAlign.center,
-              ),
-
-              const SizedBox(height: 48),
-
-              // Input section
               Container(
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      theme.colorScheme.primary.withValues(alpha: 0.1),
+                      theme.colorScheme.primary.withValues(alpha: 0.05),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(24),
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: theme.colorScheme.primary.withValues(
+                              alpha: 0.3,
+                            ),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.auto_awesome_rounded,
+                        size: 40,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+
+                    Text(
+                      'Create Amazing Images',
+                      style: theme.textTheme.headlineMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.5,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+
+                    Text(
+                      'Describe what you want to see and let AI bring it to life',
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.7,
+                        ),
+                        height: 1.4,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ],
+                ),
+              ),
+
+              const SizedBox(height: 40),
+
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: theme.colorScheme.outline.withValues(alpha: 0.5),
+                    width: 1,
+                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -117,50 +147,26 @@ class _PromptScreenState extends State<PromptScreen> {
                         children: [
                           Text(
                             'Your Prompt',
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.grey[800],
-                                ),
+                            style: theme.textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 16),
 
-                          // Text input field
                           TextField(
                             controller: _promptController,
                             focusNode: _focusNode,
                             maxLines: 4,
                             decoration: InputDecoration(
                               hintText: 'Describe what you want to see...',
-                              hintStyle: TextStyle(
-                                color: Colors.grey[400],
-                                fontSize: 16,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(
-                                  color: Colors.grey[300]!,
+                              hintStyle: theme.textTheme.bodyLarge?.copyWith(
+                                color: theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.5,
                                 ),
                               ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: Colors.deepPurple,
-                                  width: 2,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(
-                                  color: Colors.grey[300]!,
-                                ),
-                              ),
-                              contentPadding: const EdgeInsets.all(16),
-                              filled: true,
-                              fillColor: Colors.grey[50],
+                              contentPadding: const EdgeInsets.all(20),
                             ),
-                            style: const TextStyle(fontSize: 16),
-                            onChanged: (_) => setState(() {}),
+                            style: theme.textTheme.bodyLarge,
                             onSubmitted: (_) {
                               if (_promptController.text.trim().isNotEmpty) {
                                 _onGeneratePressed();
@@ -171,7 +177,6 @@ class _PromptScreenState extends State<PromptScreen> {
                       ),
                     ),
 
-                    // Generate button
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
                       child: ValueListenableBuilder<TextEditingValue>(
@@ -180,44 +185,56 @@ class _PromptScreenState extends State<PromptScreen> {
                           final isEnabled = value.text.trim().isNotEmpty;
 
                           return AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
                             child: ElevatedButton(
                               onPressed: isEnabled ? _onGeneratePressed : null,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.deepPurple,
+                                backgroundColor: theme.colorScheme.primary,
                                 foregroundColor: Colors.white,
-                                disabledBackgroundColor: Colors.grey[300],
-                                disabledForegroundColor: Colors.grey[500],
+                                disabledBackgroundColor:
+                                    theme.colorScheme.outline,
+                                disabledForegroundColor: theme
+                                    .colorScheme
+                                    .onSurface
+                                    .withValues(alpha: 0.5),
                                 padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
+                                  vertical: 18,
                                 ),
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
+                                  borderRadius: BorderRadius.circular(14),
                                 ),
-                                elevation: isEnabled ? 2 : 0,
+                                elevation: 0,
+                                shadowColor: Colors.transparent,
                               ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.auto_awesome,
-                                    size: 20,
-                                    color: isEnabled
-                                        ? Colors.white
-                                        : Colors.grey[500],
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Generate',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600,
+                              child: AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 200),
+                                child: Row(
+                                  key: ValueKey(isEnabled),
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.auto_awesome_rounded,
+                                      size: 22,
                                       color: isEnabled
                                           ? Colors.white
-                                          : Colors.grey[500],
+                                          : theme.colorScheme.onSurface
+                                                .withValues(alpha: 0.5),
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      'Generate',
+                                      style: theme.textTheme.titleMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                            color: isEnabled
+                                                ? Colors.white
+                                                : theme.colorScheme.onSurface
+                                                      .withValues(alpha: 0.5),
+                                          ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           );
@@ -228,35 +245,49 @@ class _PromptScreenState extends State<PromptScreen> {
                 ),
               ),
 
-              const Spacer(),
+              const SizedBox(height: 40),
 
-              // Tips section
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                    width: 1,
+                  ),
                 ),
-                child: Column(
+                child: Row(
                   children: [
-                    Icon(
-                      Icons.lightbulb_outline,
-                      color: Colors.deepPurple[700],
-                      size: 24,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Tip: Be specific and descriptive for better results',
-                      style: TextStyle(
-                        color: Colors.deepPurple[700],
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primary.withValues(
+                          alpha: 0.15,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      textAlign: TextAlign.center,
+                      child: Icon(
+                        Icons.lightbulb_outline_rounded,
+                        color: theme.colorScheme.primary,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Text(
+                        'Be specific and descriptive for better results',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
                   ],
                 ),
               ),
+
+              const SizedBox(height: 20),
             ],
           ),
         ),

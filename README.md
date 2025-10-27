@@ -8,7 +8,8 @@ A Flutter application that simulates AI image generation with a clean, modern in
 - **Result Screen**: View generated images with loading states and error handling
 - **Mock API**: Simulates realistic API behavior with delays and ~50% failure rate
 - **State Management**: Uses flutter_bloc for clean architecture
-- **Modern UI**: Material 3 design with smooth animations
+- **Apple-Inspired Design**: Beautiful theme inspired by Apple's design language
+- **Modern UI**: Material 3 design with smooth animations and premium aesthetics
 - **Error Handling**: Comprehensive error states with retry functionality
 - **Navigation**: Clean navigation flow with state preservation
 
@@ -46,8 +47,10 @@ lib/
 │   │   └── injection_container.dart
 │   ├── router/                     # Navigation configuration
 │   │   └── app_router.dart
-│   └── services/                   # External services (legacy)
-│       └── image_generation_service.dart
+│   ├── services/                   # External services (legacy)
+│   │   └── image_generation_service.dart
+│   └── theme/                      # Apple-inspired theme
+│       └── app_theme.dart
 ├── data/                           # Data layer
 │   ├── datasources/                # Data source implementations
 │   │   └── image_generation_remote_datasource.dart
@@ -149,11 +152,14 @@ The `ImageGenerationService` integrates with API Ninjas Random Image API:
 
 ### UI Features
 
+- **Apple-Inspired Design**: Clean, premium aesthetic inspired by [Apple.com](https://www.apple.com/)
+- **SF Pro Typography**: Apple's signature font styling and spacing
 - **Responsive Design**: Adapts to different screen sizes
 - **Loading Animations**: Smooth progress indicators and transitions
 - **Error States**: Clear error messages with retry options
 - **Input Validation**: Generate button disabled for empty prompts
 - **State Preservation**: Prompt text saved when navigating back
+- **Dark Mode Support**: Automatic system theme switching
 
 ## Dependencies
 

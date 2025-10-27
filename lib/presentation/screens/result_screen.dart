@@ -13,18 +13,19 @@ class ResultScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Generated Image',
-          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
         ),
-        backgroundColor: Colors.deepPurple,
-        elevation: 0,
-        centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: const Icon(Icons.arrow_back_ios_rounded),
           onPressed: () {
             context.read<ImageGenerationBloc>().add(const ResetToPromptEvent());
             context.go('/');
@@ -35,7 +36,7 @@ class ResultScreen extends StatelessWidget {
         builder: (context, state) {
           return SafeArea(
             child: Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.all(20.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -64,32 +65,34 @@ class ResultScreen extends StatelessWidget {
   }
 
   Widget _buildPromptDisplay(BuildContext context, String prompt) {
+    final theme = Theme.of(context);
+
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: theme.colorScheme.outline.withOpacity(0.2),
+          width: 1,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.edit_note, color: Colors.deepPurple[600], size: 20),
+              Icon(
+                Icons.edit_note_rounded,
+                color: theme.colorScheme.primary,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Text(
                 'Your Prompt',
-                style: TextStyle(
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: theme.colorScheme.primary,
                   fontWeight: FontWeight.w600,
-                  color: Colors.grey[700],
-                  fontSize: 14,
                 ),
               ),
             ],
@@ -97,7 +100,9 @@ class ResultScreen extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             prompt,
-            style: const TextStyle(fontSize: 16, color: Colors.black87),
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: theme.colorScheme.onSurface,
+            ),
           ),
         ],
       ),
@@ -118,17 +123,16 @@ class ResultScreen extends StatelessWidget {
   }
 
   Widget _buildLoadingContent(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(
+          color: theme.colorScheme.outline.withOpacity(0.2),
+          width: 1,
+        ),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -145,9 +149,13 @@ class ResultScreen extends StatelessWidget {
                   shape: BoxShape.circle,
                   gradient: SweepGradient(
                     colors: [
-                      Colors.deepPurple.withValues(alpha: 0.1),
-                      Colors.deepPurple,
-                      Colors.deepPurple.withValues(alpha: 0.1),
+                      Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.1),
+                      Theme.of(context).colorScheme.primary,
+                      Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.1),
                     ],
                     stops: [0.0, value, 1.0],
                   ),
@@ -169,7 +177,7 @@ class ResultScreen extends StatelessWidget {
             'Generating your image...',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w600,
-              color: Colors.grey[800],
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
 
@@ -177,9 +185,9 @@ class ResultScreen extends StatelessWidget {
 
           Text(
             'This may take a few moments',
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            ),
           ),
 
           const SizedBox(height: 32),
@@ -189,7 +197,7 @@ class ResultScreen extends StatelessWidget {
             width: 200,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey[200],
+              color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
               borderRadius: BorderRadius.circular(2),
             ),
             child: TweenAnimationBuilder<double>(
@@ -199,7 +207,7 @@ class ResultScreen extends StatelessWidget {
                 return Container(
                   width: 200 * value,
                   decoration: BoxDecoration(
-                    color: Colors.deepPurple,
+                    color: Theme.of(context).colorScheme.primary,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 );
@@ -212,25 +220,27 @@ class ResultScreen extends StatelessWidget {
   }
 
   Widget _buildImageContent(String imageUrl) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
+    return Builder(
+      builder: (context) {
+        final theme = Theme.of(context);
+        return Container(
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: theme.colorScheme.outline.withOpacity(0.2),
+              width: 1,
+            ),
           ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 500),
-          child: _buildImageWidget(imageUrl),
-        ),
-      ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              child: _buildImageWidget(imageUrl),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -268,9 +278,11 @@ class ResultScreen extends StatelessWidget {
             return child;
           }
           return Container(
-            color: Colors.grey[100],
-            child: const Center(
-              child: CircularProgressIndicator(color: Colors.deepPurple),
+            color: Theme.of(context).colorScheme.surface,
+            child: Center(
+              child: CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.primary,
+              ),
             ),
           );
         },
@@ -282,34 +294,45 @@ class ResultScreen extends StatelessWidget {
   }
 
   Widget _buildImageError() {
-    return Container(
-      color: Colors.grey[100],
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.broken_image_outlined, size: 64, color: Colors.grey[400]),
-          const SizedBox(height: 16),
-          Text(
-            'Failed to load image',
-            style: TextStyle(color: Colors.grey[600], fontSize: 16),
+    return Builder(
+      builder: (context) {
+        final theme = Theme.of(context);
+        return Container(
+          color: theme.colorScheme.surface,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.broken_image_outlined,
+                size: 64,
+                color: theme.colorScheme.onSurface.withOpacity(0.5),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                'Failed to load image',
+                style: TextStyle(
+                  color: theme.colorScheme.onSurface.withOpacity(0.7),
+                  fontSize: 16,
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
   Widget _buildErrorContent(BuildContext context, String errorMessage) {
+    final theme = Theme.of(context);
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        border: Border.all(
+          color: theme.colorScheme.outline.withValues(alpha: 0.2),
+          width: 1,
+        ),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -318,10 +341,14 @@ class ResultScreen extends StatelessWidget {
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: Colors.red[50],
+              color: Theme.of(context).colorScheme.error.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.error_outline, size: 40, color: Colors.red[400]),
+            child: Icon(
+              Icons.error_outline,
+              size: 40,
+              color: Theme.of(context).colorScheme.error,
+            ),
           ),
 
           const SizedBox(height: 24),
@@ -330,7 +357,7 @@ class ResultScreen extends StatelessWidget {
             'Generation Failed',
             style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.w600,
-              color: Colors.grey[800],
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
 
@@ -340,9 +367,9 @@ class ResultScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
               errorMessage,
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              ),
               textAlign: TextAlign.center,
             ),
           ),
@@ -368,7 +395,7 @@ class ResultScreen extends StatelessWidget {
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.deepPurple,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
@@ -400,7 +427,7 @@ class ResultScreen extends StatelessWidget {
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.deepPurple,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
@@ -430,8 +457,8 @@ class ResultScreen extends StatelessWidget {
             context.go('/');
           },
           style: OutlinedButton.styleFrom(
-            foregroundColor: Colors.deepPurple,
-            side: const BorderSide(color: Colors.deepPurple),
+            foregroundColor: Theme.of(context).colorScheme.primary,
+            side: BorderSide(color: Theme.of(context).colorScheme.primary),
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
